@@ -8,14 +8,29 @@ const LOCAL_STORAGE_KEY = 'todoApp.todos'
 function App() {
   const [todos, setTodos] = useState([]) // object destructuring (meaning Js experssion which allows us to extract data from arrays, object and maps and set them to new different variables)
   const todoNameRef = useRef()
-  useEffect(() =>{
+
+  useEffect(() => {
+    const storedTodos = JSON.parse(localStorage.getItem(LOCAL_STORAGE_KEY))
+    if (storedTodos) setTodos(storedTodos)
+  }, [])
+
+  useEffect(() => {
     localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(todos))
   }, [todos])
+
+  const toggleTodo = (id) => {
+    const newTodos = [...todos] // make a copy existing Todo(array)
+    // Perform operations on newTodos
+    const todo = newTodos.find(todo => todo.id === id)
+    todo.complete = !todo.complete
+    setTodos(newTodos)
+  }
+
   function handleAddTodo(e) {
     const name = todoNameRef.current.value
     if (name === '') return
     setTodos(prevTodos => {
-      return [...prevTodos, {id:uuidv4(), name: name, complete: false}]
+      return [...prevTodos, { id: uuidv4(), name: name, complete: false }]
     })
     todoNameRef.current.value = null
   }
